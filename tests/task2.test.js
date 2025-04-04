@@ -1,29 +1,30 @@
 const puppeteer = require('puppeteer');
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+describe('User City Tests', () => {
+  let browser;
+  let page;
 
-  
-  await page.goto('http://127.0.0.1:5500/index.html');
+  beforeAll(async () => {
+    browser = await puppeteer.launch();
+    page = await browser.newPage();
+  });
 
+  afterAll(async () => {
+    await browser.close();
+  });
 
-  const userName = 'Leanne Graham'; 
-  await page.type('#userNameInput', userName);
+  test('should display correct city for user', async () => {
+    await page.goto('http://127.0.0.1:5500/index.html');
 
-  await page.click('#getUserButton');
+    const userName = 'Leanne Graham';
+    await page.type('#userNameInput', userName);
 
-  await page.waitForTimeout(3000);
+    await page.click('#getUserButton');
 
-  await page.waitForSelector('#userCity');
+    await page.waitForTimeout(3000);
+    await page.waitForSelector('#userCity');
 
-  const userCity = await page.$eval('#userCity', element => element.textContent);
-
-  if (userCity === 'Gwenborough') {
-    console.log(`Місто користувача співпадає з очікуваним результатом: ${userCity}`);
-  } else {
-    console.log(`Місто користувача не співпадає з очікуваним результатом: ${userCity}`);
-  }
-
-  await browser.close();
-})();
+    const userCity = await page.$eval('#userCity', element => element.textContent);
+    expect(userCity).toBe('Gwenborough');
+  }, 10000);
+});
